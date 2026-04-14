@@ -1,21 +1,128 @@
+:root {
+    --blue-main: #2a4dbb;
+    --blue-bg: #eaf1ff;
+    --blue-head: #e0eaff;
+    --blue-light: #f5f8ff;
+}
+/* Leaderboard styles */
+#leaderboard-section {
+    margin-top: 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+#leaderboard {
+    border-collapse: collapse;
+    min-width: 420px;
+    background: var(--blue-bg);
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px #e0eaff;
+}
+#leaderboard th, #leaderboard td {
+    padding: 4px 10px;
+    border: 1px solid #b3c6ff;
+    text-align: center;
+    color: var(--blue-main);
+}
+#leaderboard thead tr {
+    background: var(--blue-head);
+    color: var(--blue-main);
+}
+#leaderboard tbody tr {
+    background: var(--blue-bg);
+}
+
+/* Timer styles */
+#timer-display {
+    margin: 18px 0 0 0;
+    font-size: 1.1em;
+    font-weight: 500;
+    color: var(--primary);
+    letter-spacing: 0.04em;
+}
+.sudoku-cell.incorrect.conflict {
+    background: var(--cell-incorrect) !important;
+    border: 2.5px solid var(--cell-conflict) !important;
+    /* Extra visibility: maybe a box-shadow */
+    box-shadow: 0 0 4px 1px var(--cell-conflict);
+}
+
+:root {
+    --bg: #f4f4f4;
+    --text: #222;
+    --primary: #1976d2;
+    --primary-hover: #1565c0;
+    --button-text: #fff;
+    --cell-bg: #fafafa;
+    --cell-prefilled: #e0e0e0;
+    --cell-incorrect: #ffcdd2;
+    --cell-correct: #c8e6c9;
+    --cell-conflict: #d32f2f;
+    --hint-bg: #cce7ff;
+    --border: #333;
+}
+
+[data-theme="dark"] {
+    --bg: #181a1b;
+    --text: #f4f4f4;
+    --primary: #90caf9;
+    --primary-hover: #42a5f5;
+    --button-text: #181a1b;
+    --cell-bg: #23272b;
+    --cell-prefilled: #333;
+    --cell-incorrect: #b71c1c;
+    --cell-correct: #388e3c;
+    --cell-conflict: #ff5252;
+    --hint-bg: #1976d2;
+    --border: #90caf9;
+}
+
 body {
     font-family: Arial, sans-serif;
-    background: #f4f4f4;
-    text-align: center;
+    background: var(--bg);
+    color: var(--text);
     margin: 0;
     padding: 0;
 }
 
 h1 {
     margin-top: 30px;
-    color: #333;
+    color: var(--text);
+    font-size: 2.2em;
+}
+
+.sudoku-layout {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    margin-top: 30px;
+    gap: 8px;
+}
+
+.side-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.left-controls {
+    align-items: flex-end;
+    margin-right: 4px;
+}
+
+.right-controls {
+    align-items: flex-start;
+    margin-left: 4px;
 }
 
 #sudoku-board {
     display: inline-block;
-    margin: 30px auto;
-    border: 4px solid #333;
-    background: #fff;
+    margin: 0 0;
+    border: 4px solid var(--border);
+    background: var(--bg);
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
@@ -24,14 +131,19 @@ h1 {
 }
 
 .sudoku-cell {
-    width: 40px;
-    height: 40px;
+    width: 8vw;
+    max-width: 40px;
+    min-width: 28px;
+    height: 8vw;
+    max-height: 40px;
+    min-height: 28px;
     border: 1px solid #bbb;
     text-align: center;
-    font-size: 20px;
+    font-size: clamp(16px, 4vw, 22px);
     outline: none;
-    background: #fafafa;
-    transition: background 0.2s;
+    background: var(--cell-bg);
+    transition: background 0.2s, border 0.2s;
+    color: var(--text);
 }
 
 .sudoku-cell:focus {
@@ -39,47 +151,123 @@ h1 {
 }
 
 .sudoku-cell.prefilled {
-    background: #e0e0e0;
+    background: var(--cell-prefilled);
     font-weight: bold;
-    color: #333;
+    color: var(--text);
 }
 
 .sudoku-cell.incorrect {
-    background: #ffcdd2;
+    background: var(--cell-incorrect);
 }
 
-.sudoku-cell:nth-child(3),
-.sudoku-cell:nth-child(6) {
-    border-right: 3px solid #333;
+.sudoku-cell.conflict {
+    border: 2px solid var(--cell-conflict) !important;
 }
 
-.sudoku-row:nth-child(3) .sudoku-cell,
-.sudoku-row:nth-child(6) .sudoku-cell {
-    border-bottom: 3px solid #333;
+.sudoku-cell.correct {
+    background: var(--cell-correct);
 }
 
-.controls {
-    margin: 20px auto;
+.sudoku-cell.alt-block {
+    background: #e0e0e0;
+}
+
+.sudoku-cell:not(.alt-block) {
+    background: #f7f7f7;
+}
+
+#hint-button {
+    background-color: #43a047;
+    border: none;
+    padding: 10px 20px;
+    color: var(--button-text);
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-style: italic;
+    font-weight: 500;
+}
+
+#hint-button:hover {
+    background-color: #388e3c;
+}
+
+.hint-entry {
+    background-color: #a5d6a7 !important;
+    font-style: italic;
+    color: #1b5e20;
 }
 
 button {
     padding: 8px 18px;
-    margin: 0 8px;
-    font-size: 16px;
+    margin: 0 0 8px 0;
+    font-size: 1.1em;
     border: none;
-    background: #1976d2;
-    color: #fff;
+    background: var(--primary);
+    color: var(--button-text);
     border-radius: 4px;
     cursor: pointer;
     transition: background 0.2s;
 }
 
 button:hover {
-    background: #1565c0;
+    background: var(--primary-hover);
 }
 
 #message {
-    margin-left: 20px;
-    font-size: 16px;
+    margin-left: 0;
+    font-size: 1em;
     color: #d32f2f;
+    word-break: break-word;
+}
+
+.step-log {
+  margin-top: 20px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+  border-radius: 5px;
+  max-width: 300px;
+}
+
+.step-log h3 {
+  margin: 0 0 10px;
+  font-size: 16px;
+  color: #333;
+}
+
+.step-log p {
+  margin: 5px 0;
+  font-size: 14px;
+  color: #555;
+}
+
+.incorrect-entry {
+    background-color: #ffcccc; /* Light red */
+}
+
+@media (max-width: 600px) {
+  .sudoku-layout {
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .side-controls {
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+  }
+  .left-controls, .right-controls {
+    margin: 0;
+    min-width: 0;
+  }
+  #sudoku-board {
+    margin: 0 auto;
+  }
+  .sudoku-cell {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+  }
 }

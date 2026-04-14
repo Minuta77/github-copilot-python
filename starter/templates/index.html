@@ -6,12 +6,53 @@
   <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
-  <h1>Sudoku Game</h1>
-  <div id="sudoku-board"></div>
-  <div class="controls">
-    <button id="new-game">New Game</button>
-    <button id="check-solution">Check Solution</button>
-    <span id="message"></span>
+  <button id="darkmode-toggle" title="Toggle dark mode" style="position:fixed; top:18px; right:38px; font-size:1.5em; border-radius:50%; width:38px; height:38px; display:flex; align-items:center; justify-content:center; background:var(--blue-light); border:2px solid var(--blue-main); color:var(--blue-main); cursor:pointer; box-shadow:0 1px 4px #b3c6ff; z-index:100;">🌙</button>
+  <div style="display:flex; flex-direction:row; align-items:center; justify-content:center; min-height:100vh; width:100vw;">
+    <!-- Left Controls -->
+  <div class="side-controls left-controls" style="display:flex; flex-direction:column; align-items:flex-end; justify-content:center; min-width:120px; margin-right:12px; height:100%;">
+      <label for="difficulty" style="margin-bottom: 8px; font-size:1em;">Difficulty:</label>
+      <select id="difficulty" style="margin-bottom: 12px; font-size:1em;">
+        <option value="easy">Easy</option>
+        <option value="medium" selected>Medium</option>
+        <option value="hard">Hard</option>
+      </select>
+      <button id="new-game" style="margin-top:10px; width:100px;">New Game</button>
+    </div>
+    <!-- Center Column -->
+    <div style="display:flex; flex-direction:column; align-items:center; width:100%; max-width:700px; min-width:480px;">
+      <div style="font-size:2.2em; font-weight:600; letter-spacing:0.08em; color:var(--blue-main); text-align:center; margin-bottom:10px;">Sudoku</div>
+      <div id="sudoku-board"></div>
+  <!-- Timer-Anzeige wird nur per JS erzeugt -->
+      <div id="leaderboard-section" style="margin-top:18px; display:flex; flex-direction:column; align-items:center; width:100%;">
+        <div style="font-size:1.7em; font-weight:600; margin-bottom:8px; color:var(--blue-main); letter-spacing:0.03em; text-align:center;">Top 10 Fastest Times:</div>
+        <table id="leaderboard" style="border-collapse:collapse; min-width:420px; background:var(--blue-bg); box-shadow:0 2px 8px #e0eaff;">
+          <thead>
+            <tr style="background:var(--blue-head); color:var(--blue-main);">
+              <th style="padding:4px 10px;">Rank</th>
+              <th style="padding:4px 10px;">Name</th>
+              <th style="padding:4px 10px;">Time</th>
+              <th style="padding:4px 10px;">Level</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr id="example-leaderboard-entry">
+              <td style="text-align:center;">1</td>
+              <td>Max Mustermann</td>
+              <td>1:23</td>
+              <td>Medium</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- Right Controls -->
+  <div class="side-controls right-controls" style="display:flex; flex-direction:column; align-items:flex-start; justify-content:center; min-width:120px; margin-left:12px; height:100%;">
+      <button id="check-solution" style="margin-bottom:12px; width:100px;">Check</button>
+      <button id="hint-button" style="width:100px;"><em>Hint</em></button>
+      <span id="message" style="margin-top:16px;"></span>
+    </div>
+  </div>
+  <!-- Entferne Zeit-Anzeige und untere Buttons (bereits entfernt) -->
   </div>
   <script src="/static/main.js"></script>
 </body>

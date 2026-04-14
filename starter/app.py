@@ -15,7 +15,13 @@ def index():
 
 @app.route('/new')
 def new_game():
-    clues = int(request.args.get('clues', 35))
+    difficulty = request.args.get('difficulty', 'medium')
+    if difficulty == 'easy':
+        clues = 40
+    elif difficulty == 'hard':
+        clues = 24
+    else:
+        clues = 32
     puzzle, solution = sudoku_logic.generate_puzzle(clues)
     CURRENT['puzzle'] = puzzle
     CURRENT['solution'] = solution
@@ -34,6 +40,36 @@ def check_solution():
             if board[i][j] != solution[i][j]:
                 incorrect.append([i, j])
     return jsonify({'incorrect': incorrect})
+
+@app.route('/hint', methods=['POST'])
+def hint():
+    data = request.json
+    board = data.get('board')
+    solution = CURRENT.get('solution')
+    if solution is None:
+        return jsonify({'error': 'No game in progress'}), 400
+
+    print(f"Board: {board}")
+    print(f"Solution: {solution}")
+
+    # Find a hint
+    hint_cell = sudoku_logic.get_hint(board, solution)
+    if hint_cell:
+        row, col, value = hint_cell
+        return jsonify({'row': row, 'col': col, 'value': value})
+    else:
+        return jsonify({'error': 'No hints available'}), 400
+
+@app.route('/validate', methods=['POST'])
+def validate():
+    data = request.json
+    board = data.get('board')
+    solution = CURRENT.get('solution')
+    if solution is None:
+        return jsonify({'error': 'No game in progress'}), 400
+
+    result = sudoku_logic.validate_board(board, solution)
+    return jsonify(result)
 
 if __name__ == '__main__':
     app.run(debug=True)
