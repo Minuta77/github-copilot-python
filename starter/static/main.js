@@ -22,6 +22,7 @@ function initDarkMode() {
   if (saved === '1') setDarkMode(true);
   else setDarkMode(false);
 }
+
 // --- Leaderboard logic ---
 function getLeaderboard() {
   const raw = localStorage.getItem('sudoku_leaderboard');
@@ -37,9 +38,9 @@ function saveLeaderboard(entries) {
   localStorage.setItem('sudoku_leaderboard', JSON.stringify(entries));
 }
 
-function addLeaderboardEntry(name, timeSeconds, difficulty) {
+function addLeaderboardEntry(name, timeSeconds, difficulty, hints) {
   const entries = getLeaderboard();
-  entries.push({ name, time: timeSeconds, difficulty });
+  entries.push({ name, time: timeSeconds, difficulty, hints });
   entries.sort((a, b) => a.time - b.time);
   if (entries.length > 10) entries.length = 10;
   saveLeaderboard(entries);
@@ -58,16 +59,19 @@ function renderLeaderboard() {
   if (entries.length === 0) {
     // Beispiel-Eintrag anzeigen, wenn keine echten Einträge vorhanden sind
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td style="text-align:center;">1</td><td>Max Mustermann</td><td>1:23</td><td>Medium</td>`;
+    tr.innerHTML = `<td style="text-align:center;">1</td><td>Max Mustermann</td><td>1:23</td><td>Medium</td><td>2</td>`;
     tbody.appendChild(tr);
   } else {
     entries.forEach((entry, idx) => {
       const tr = document.createElement('tr');
-      tr.innerHTML = `<td style="text-align:center;">${idx + 1}</td><td>${entry.name}</td><td>${formatTime(entry.time)}</td><td>${entry.difficulty}</td>`;
+      tr.innerHTML = `<td style="text-align:center;">${idx + 1}</td><td>${entry.name}</td><td>${formatTime(entry.time)}</td><td>${entry.difficulty}</td><td>${entry.hints ?? 0}</td>`;
       tbody.appendChild(tr);
     });
   }
 }
+
+// --- Hint Counter ---
+let hintCount = 0;
 
 // --- Timer logic ---
 let timer = 0;
@@ -213,6 +217,7 @@ async function newGame() {
 
 function logStepCompletion(message) {
   const logDiv = document.getElementById('step-log');
+  if (!logDiv) return; // Wenn step-log nicht existiert, nichts tun
   const logEntry = document.createElement('p');
   logEntry.innerText = message;
   logDiv.appendChild(logEntry);
@@ -285,13 +290,15 @@ async function checkSolution() {
     msg.style.color = '#388e3c';
     msg.innerText = 'Congratulations! You solved it!';
     logStepCompletion('Schritt 2: Validierung erfolgreich abgeschlossen.');
-    // Prompt for name and save to leaderboard
+    console.log('==> Prompt wird jetzt angezeigt!');
     setTimeout(() => {
-      let name = prompt('You made the Top 10! Enter your name:','');
-      if (name && name.trim()) {
-        addLeaderboardEntry(name.trim(), timer, getDifficultyLabel());
-        renderLeaderboard();
+      let name = '';
+      while (!name || !name.trim()) {
+        name = prompt('Bitte gib deinen Namen für das Leaderboard ein:','');
+        if (name === null) { name = 'Anonym'; break; }
       }
+      addLeaderboardEntry(name.trim(), timer, getDifficultyLabel(), hintCount);
+      renderLeaderboard();
     }, 300);
   } else if (data.incomplete) {
     msg.style.color = '#d32f2f';
@@ -303,6 +310,7 @@ async function checkSolution() {
 }
 
 async function getHint() {
+  hintCount++;
   const boardDiv = document.getElementById('sudoku-board');
   const inputs = boardDiv.getElementsByTagName('input');
   const board = [];
@@ -342,7 +350,10 @@ async function getHint() {
 document.addEventListener('DOMContentLoaded', () => {
   initDarkMode();
   document.getElementById('darkmode-toggle').addEventListener('click', toggleDarkMode);
-  document.getElementById('new-game').addEventListener('click', newGame);
+  document.getElementById('new-game').addEventListener('click', () => {
+    hintCount = 0;
+    newGame();
+  });
   document.getElementById('check-solution').addEventListener('click', checkSolution);
   document.getElementById('hint-button').addEventListener('click', getHint);
   renderLeaderboard();

@@ -1,5 +1,5 @@
 import pytest
-from sudoku_logic import create_empty_board, generate_puzzle, is_safe, SIZE
+from sudoku_logic import create_empty_board, generate_puzzle, is_safe, SIZE, count_solutions
 
 def test_create_empty_board():
     board = create_empty_board()
@@ -20,3 +20,7 @@ def test_is_safe():
     board[0][0] = 5
     assert not is_safe(board, 0, 1, 5)
     assert is_safe(board, 0, 1, 3)
+
+def test_generate_puzzle_has_unique_solution():
+    puzzle, _ = generate_puzzle(35)
+    assert count_solutions(puzzle) == 1, "Puzzle should have exactly one solution"

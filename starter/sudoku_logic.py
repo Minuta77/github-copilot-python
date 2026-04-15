@@ -1,3 +1,26 @@
+def count_solutions(board):
+    """
+    Zählt die Anzahl der Lösungen für das gegebene Sudoku-Board.
+    Bricht nach 2 Lösungen ab (um Eindeutigkeit zu prüfen).
+    """
+    count = [0]
+
+    def solve(b):
+        for row in range(SIZE):
+            for col in range(SIZE):
+                if b[row][col] == EMPTY:
+                    for num in range(1, SIZE + 1):
+                        if is_safe(b, row, col, num):
+                            b[row][col] = num
+                            solve(b)
+                            b[row][col] = EMPTY
+                    return
+        count[0] += 1
+        if count[0] >= 2:
+            return
+
+    solve(deep_copy(board))
+    return count[0]
 import copy
 import random
 
@@ -40,13 +63,20 @@ def fill_board(board):
     return True
 
 def remove_cells(board, clues):
-    attempts = SIZE * SIZE - clues
-    while attempts > 0:
-        row = random.randrange(SIZE)
-        col = random.randrange(SIZE)
-        if board[row][col] != EMPTY:
-            board[row][col] = EMPTY
-            attempts -= 1
+    # Entferne Zellen nur, wenn das Puzzle eindeutig lösbar bleibt
+    cells = [(r, c) for r in range(SIZE) for c in range(SIZE)]
+    random.shuffle(cells)
+    removed = 0
+    max_remove = SIZE * SIZE - clues
+    for row, col in cells:
+        if removed >= max_remove:
+            break
+        backup = board[row][col]
+        board[row][col] = EMPTY
+        if count_solutions(board) == 1:
+            removed += 1
+        else:
+            board[row][col] = backup
 
 def generate_puzzle(clues=35):
     board = create_empty_board()

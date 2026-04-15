@@ -70,7 +70,7 @@
     --primary-hover: #42a5f5;
     --button-text: #181a1b;
     --cell-bg: #23272b;
-    --cell-prefilled: #333;
+    --cell-prefilled: #555;
     --cell-incorrect: #b71c1c;
     --cell-correct: #388e3c;
     --cell-conflict: #ff5252;
@@ -153,7 +153,11 @@ h1 {
 .sudoku-cell.prefilled {
     background: var(--cell-prefilled);
     font-weight: bold;
-    color: var(--text);
+    color: var(--blue-main);
+}
+
+[data-theme="dark"] .sudoku-cell.prefilled {
+    color: var(--blue-main);
 }
 
 .sudoku-cell.incorrect {
